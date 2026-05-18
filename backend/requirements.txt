@@ -1,0 +1,30 @@
+fastapi
+uvicorn
+python-multipart
+sqlalchemy
+pydantic
+pydantic-settings
+
+# File parsers
+pymupdf
+pdfplumber
+python-docx
+python-pptx
+
+# NLP
+spacy
+nltk
+sentence-transformers
+scikit-learn
+numpy
+
+# Auth
+python-jose[cryptography]
+passlib[bcrypt]
+
+# spaCy language models
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+
+# Deployment
+gunicorn
+psycopg2-binary
