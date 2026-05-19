@@ -5,6 +5,12 @@ import {
   ResponsiveContainer, Cell
 } from "recharts";
 
+const sanitizeCandidateName = (value) =>
+  String(value || "")
+    .replace(/\b(?:\+?\d[\d\s\-\(\)]{6,}\d)\b/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+
 const COLORS = ["#f87171", "#f59e0b", "#60a5fa", "#CCD67F"];
 
 export default function DashboardPage() {
@@ -140,7 +146,7 @@ export default function DashboardPage() {
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                     }}>
-                      {c.name || "Unknown"}
+                      {sanitizeCandidateName(c.name) || "Unknown"}
                     </div>
                     <div style={{
                       fontSize: 11,

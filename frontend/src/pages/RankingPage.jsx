@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { getRanking, getJobs } from "../api/client";
 
+const sanitizeCandidateName = (value) =>
+  String(value || "")
+    .replace(/\b(?:\+?\d[\d\s\-\(\)]{6,}\d)\b/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+
 export default function RankingPage() {
   const [jobs, setJobs]       = useState([]);
   const [jobId, setJobId]     = useState("");
@@ -114,7 +120,7 @@ export default function RankingPage() {
 
                   {/* Candidate Info */}
                   <div className="candidate-info">
-                    <strong>{c.name || "Unknown"}</strong>
+                    <strong>{sanitizeCandidateName(c.name) || "Unknown"}</strong>
                     <span>{c.email || "No email"}</span>
                     {c.skills?.length > 0 && (
                       <div className="skills-list" style={{ marginTop: 6 }}>

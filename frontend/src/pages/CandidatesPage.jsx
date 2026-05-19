@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { getCandidates, deleteCandidate } from "../api/client";
 
+const sanitizeCandidateName = (value) =>
+  String(value || "")
+    .replace(/\b(?:\+?\d[\d\s\-\(\)]{6,}\d)\b/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+
 export default function CandidatesPage() {
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading]       = useState(true);
@@ -62,9 +68,9 @@ export default function CandidatesPage() {
           {filtered.map(c => (
             <div key={c.id} className="card candidate-card">
               <div className="avatar">
-                {(c.name || "?").charAt(0).toUpperCase()}
+                {sanitizeCandidateName(c.name || "?").charAt(0).toUpperCase()}
               </div>
-              <div className="candidate-name">{c.name || "Unknown"}</div>
+              <div className="candidate-name">{sanitizeCandidateName(c.name) || "Unknown"}</div>
               <div className="candidate-email">{c.email || "No email"}</div>
 
               {c.skills?.length > 0 && (

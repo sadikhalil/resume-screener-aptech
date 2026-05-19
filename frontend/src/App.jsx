@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
+import { HashRouter, Routes, Route, NavLink } from "react-router-dom";
 import DashboardPage  from "./pages/DashboardPage";
 import JobsPage       from "./pages/JobsPage";
 import UploadPage     from "./pages/UploadPage";
@@ -12,7 +12,7 @@ export default function App() {
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <div className="app">
 
         {/* Dark overlay when sidebar open on mobile */}
@@ -69,11 +69,12 @@ export default function App() {
               <Route path="/upload"     element={<UploadPage />} />
               <Route path="/candidates" element={<CandidatesPage />} />
               <Route path="/ranking"    element={<RankingPage />} />
+              <Route path="*"           element={<DashboardPage />} />
             </Routes>
           </main>
         </div>
 
       </div>
-    </BrowserRouter>
+    </HashRouter>
   );
 }

@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException
@@ -10,6 +11,8 @@ from core.parsers.extractor import extract_text
 from core.nlp.extractor     import process_resume
 from core.matching.scorer   import calculate_score
 from config import settings
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -48,14 +51,37 @@ async def upload_resume(
     # 4. Extract raw text from the file
     try:
         raw_text = extract_text(file_path)
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=422, detail=f"Could not read file: {str(e)}")
+        logger.exception("Resume text extraction failed for file: %s", file_path)
+        if os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+            except OSError:
+                logger.warning("Failed to remove invalid upload: %s", file_path)
+        raise HTTPException(
+            status_code=422,
+            detail="Could not process the uploaded file. Please upload a valid resume document."
+        )
 
     if not raw_text.strip():
         raise HTTPException(status_code=422, detail="No text found in the uploaded file.")
 
     # 5. Run the full NLP pipeline
-    nlp_data = process_resume(raw_text)
+    try:
+        nlp_data = process_resume(raw_text)
+    except Exception as e:
+        logger.exception("NLP processing failed for uploaded resume: %s", file_path)
+        if os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+            except OSError:
+                logger.warning("Failed to remove uploaded file after NLP failure: %s", file_path)
+        raise HTTPException(
+            status_code=422,
+            detail="Unable to analyze the resume at this time. Please try a different file."
+        )
 
     # 6. Save candidate to the database
     candidate = Candidate(
