@@ -31,11 +31,13 @@ body {
 }
 
 /* ── Layout ── */
-.app { display: flex; min-height: 100vh; }
+/* ── Layout ── */
+.app { display: flex; min-height: 100vh; overflow: hidden; }
 
 /* ── Sidebar ── */
 .sidebar {
-  width: 220px;
+  width: 200px;
+  min-width: 200px;
   min-height: 100vh;
   background: var(--bg-sidebar);
   border-right: 1px solid var(--border);
@@ -44,6 +46,7 @@ body {
   flex-direction: column;
   gap: 24px;
   flex-shrink: 0;
+  overflow-y: auto;
 }
 
 .logo {
@@ -94,18 +97,17 @@ body {
   color: #fff;
   font-weight: 700;
 }
-
-/* ── Main Content ── */
+/*main content area */
 .content {
   flex: 1;
   padding: 40px;
   overflow-y: auto;
   max-height: 100vh;
+  min-width: 0;
   background: var(--bg-main);
-}
 
-/* ── Page ── */
-.page { max-width: 900px; }
+}* ── Page ── */
+.page { max-width: 100%; }
 
 .page-header { margin-bottom: 32px; }
 
@@ -138,11 +140,10 @@ body {
 /* ── Stat Grid ── */
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
   margin-bottom: 24px;
 }
-
 .stat-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -385,7 +386,7 @@ button:disabled {
 /* ── Candidates Grid ── */
 .candidates-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 }
 
@@ -478,3 +479,42 @@ button:disabled {
 ::-webkit-scrollbar-track { background: var(--bg-main); }
 ::-webkit-scrollbar-thumb { background: var(--border-dark); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--brown-dark); }
+
+
+/* ── Responsive Large Screens ── */
+@media (min-width: 1024px) {
+  .stat-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .candidates-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .content {
+    padding: 40px;
+  }
+  .page { max-width: 900px; }
+}
+
+/* ── Responsive Small Screens ── */
+@media (max-width: 640px) {
+  .sidebar {
+    width: 150px;
+    min-width: 150px;
+    padding: 16px 8px;
+  }
+  .logo { font-size: 15px; }
+  .logo-icon { font-size: 16px; }
+  .nav-link { font-size: 11px; padding: 8px 6px; gap: 6px; }
+  .nav-label { font-size: 10px; padding: 0 6px; }
+  .content { padding: 12px; }
+  .page-header h1 { font-size: 18px; }
+  .card { padding: 12px; }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .stat-value { font-size: 22px; }
+  .candidates-grid { grid-template-columns: 1fr; }
+  .score-big { font-size: 48px; }
+  .ranking-row { flex-wrap: wrap; gap: 8px; padding: 12px; }
+  .job-card { flex-direction: column; }
+  .breakdown-key { width: 70px; font-size: 11px; }
+  .score-pill { font-size: 18px; min-width: 55px; }
+}
