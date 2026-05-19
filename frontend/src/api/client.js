@@ -18,4 +18,4 @@ export const getCandidates   = ()         => api.get("/candidates/");
 export const getCandidate    = (id)       => api.get(`/candidates/${id}/`);
 export const deleteCandidate = (id)       => api.delete(`/candidates/${id}/`);
 export const getRanking      = (jobId)    => api.get(`/rank/?job_id=${jobId}`);
-export const getAnalytics    = ()         => api.get("/analytics/overview/");
+export const getAnalytics = () => api.get("/analytics/overview/");

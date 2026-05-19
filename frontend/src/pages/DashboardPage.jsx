@@ -15,7 +15,10 @@ export default function DashboardPage() {
   useEffect(() => {
     getAnalytics()
       .then(r => setStats(r.data))
-      .catch(() => setError("Could not load analytics. Make sure the backend is running."))
+      .catch((error) => {
+        console.error("Analytics error:", error);
+        setError("Could not load analytics. Error: " + (error.response?.status || error.message));
+      })
       .finally(() => setLoading(false));
   }, []);
 
