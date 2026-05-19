@@ -5,7 +5,7 @@ import {
   ResponsiveContainer, Cell
 } from "recharts";
 
-const COLORS = ["#f87171", "#f59e0b", "#60a5fa", "#22c55e"];
+const COLORS = ["#f87171", "#f59e0b", "#60a5fa", "#CCD67F"];
 
 export default function DashboardPage() {
   const [stats, setStats]     = useState(null);
@@ -15,10 +15,7 @@ export default function DashboardPage() {
   useEffect(() => {
     getAnalytics()
       .then(r => setStats(r.data))
-      .catch((error) => {
-        console.error("Analytics error:", error);
-        setError("Could not load analytics. Error: " + (error.response?.status || error.message));
-      })
+      .catch(() => setError("Could not load analytics. Make sure the backend is running."))
       .finally(() => setLoading(false));
   }, []);
 
@@ -44,7 +41,7 @@ export default function DashboardPage() {
     range, count, color: COLORS[i]
   }));
 
-  const scoreColor = (s) => s >= 75 ? "#22c55e" : s >= 50 ? "#f59e0b" : "#f87171";
+  const scoreColor = (s) => s >= 75 ? "#3a6b00" : s >= 50 ? "#8A5F41" : "#c0392b";
 
   return (
     <div className="page">
@@ -77,64 +74,111 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Score Distribution Chart */}
-      <div className="card">
-        <h2>Score Distribution</h2>
-        {stats.total_scored === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon">📭</div>
-            <p>No resumes scored yet. Upload a resume to get started.</p>
-          </div>
-        ) : (
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={distData} barSize={48}>
-              <XAxis dataKey="range" stroke="#475569" tick={{ fill: "#94a3b8", fontSize: 13 }} />
-              <YAxis allowDecimals={false} stroke="#475569" tick={{ fill: "#94a3b8", fontSize: 13 }} />
-              <Tooltip
-                contentStyle={{ background: "#1e293b", border: "1px solid #334155", borderRadius: 8 }}
-                labelStyle={{ color: "#e2e8f0" }}
-                itemStyle={{ color: "#818cf8" }}
-              />
-              <Bar dataKey="count" radius={[6, 6, 0, 0]}>
-                {distData.map((entry, i) => (
-                  <Cell key={i} fill={entry.color} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        )}
-      </div>
+      {/* Two column layout — chart + top candidates side by side */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 0 }}>
 
-      {/* Top Candidates */}
-      {stats.top_candidates?.length > 0 && (
-        <div className="card">
-          <h2>🏅 Top Candidates</h2>
-          <table className="top-table">
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Score</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stats.top_candidates.map((c, i) => (
-                <tr key={i}>
-                  <td>{i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`}</td>
-                  <td><strong>{c.name || "Unknown"}</strong></td>
-                  <td className="muted">{c.email}</td>
-                  <td>
-                    <span style={{ color: scoreColor(c.final_score), fontWeight: 700 }}>
-                      {c.final_score}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* Score Distribution Chart */}
+        <div className="card" style={{ marginBottom: 0 }}>
+          <h2>Score Distribution</h2>
+          {stats.total_scored === 0 ? (
+            <div className="empty-state" style={{ padding: "20px 0" }}>
+              <div className="empty-icon">📭</div>
+              <p>No resumes scored yet.</p>
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={180}>
+              <BarChart data={distData} barSize={36}>
+                <XAxis
+                  dataKey="range"
+                  stroke="#B08060"
+                  tick={{ fill: "#7A5C3E", fontSize: 11 }}
+                />
+                <YAxis
+                  allowDecimals={false}
+                  stroke="#B08060"
+                  tick={{ fill: "#7A5C3E", fontSize: 11 }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: "#fff",
+                    border: "1px solid #E2CCB0",
+                    borderRadius: 8,
+                    color: "#3B2510"
+                  }}
+                  labelStyle={{ color: "#3B2510" }}
+                  itemStyle={{ color: "#8A5F41" }}
+                />
+                <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                  {distData.map((entry, i) => (
+                    <Cell key={i} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
-      )}
+
+        {/* Top Candidates — compact */}
+        {stats.top_candidates?.length > 0 && (
+          <div className="card" style={{ marginBottom: 0 }}>
+            <h2>🏅 Top Candidates</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {stats.top_candidates.slice(0, 4).map((c, i) => (
+                <div key={i} style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  padding: "8px 10px",
+                  borderRadius: 8,
+                  background: i === 0 ? "rgba(204,214,127,0.12)" : "var(--bg-main)",
+                  border: `1px solid ${i === 0 ? "#b8c45a" : "var(--border)"}`,
+                }}>
+                  <span style={{ fontSize: 16, flexShrink: 0 }}>
+                    {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`}
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{
+                      fontSize: 13,
+                      fontWeight: 700,
+                      color: "var(--text-primary)",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis"
+                    }}>
+                      {c.name || "Unknown"}
+                    </div>
+                    <div style={{
+                      fontSize: 11,
+                      color: "var(--text-muted)",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis"
+                    }}>
+                      {c.email}
+                    </div>
+                  </div>
+                  <span style={{
+                    fontSize: 14,
+                    fontWeight: 800,
+                    color: scoreColor(c.final_score),
+                    background: c.final_score >= 75
+                      ? "rgba(204,214,127,0.25)"
+                      : c.final_score >= 50
+                      ? "rgba(138,95,65,0.12)"
+                      : "rgba(192,57,43,0.10)",
+                    padding: "3px 8px",
+                    borderRadius: 6,
+                    flexShrink: 0,
+                  }}>
+                    {c.final_score}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+      </div>
     </div>
   );
 }
