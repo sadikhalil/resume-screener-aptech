@@ -30,9 +30,7 @@ export default function DashboardPage() {
 
   if (error) return (
     <div className="page">
-      <div className="page-header">
-        <h1>Dashboard</h1>
-      </div>
+      <div className="page-header"><h1>Dashboard</h1></div>
       <div className="alert alert-error">{error}</div>
     </div>
   );
@@ -42,6 +40,11 @@ export default function DashboardPage() {
   }));
 
   const scoreColor = (s) => s >= 75 ? "#3a6b00" : s >= 50 ? "#8A5F41" : "#c0392b";
+  const scoreBg    = (s) => s >= 75
+    ? "rgba(204,214,127,0.25)"
+    : s >= 50
+    ? "rgba(138,95,65,0.12)"
+    : "rgba(192,57,43,0.10)";
 
   return (
     <div className="page">
@@ -74,10 +77,12 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Two column layout — chart + top candidates side by side */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 0 }}>
-
-        {/* Score Distribution Chart */}
+      {/* Chart + Top Candidates side by side on desktop, stacked on mobile */}
+      <div
+        className="dashboard-grid"
+        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
+      >
+        {/* Score Distribution */}
         <div className="card" style={{ marginBottom: 0 }}>
           <h2>Score Distribution</h2>
           {stats.total_scored === 0 ? (
@@ -87,43 +92,33 @@ export default function DashboardPage() {
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={distData} barSize={36}>
-                <XAxis
-                  dataKey="range"
-                  stroke="#B08060"
-                  tick={{ fill: "#7A5C3E", fontSize: 11 }}
-                />
-                <YAxis
-                  allowDecimals={false}
-                  stroke="#B08060"
-                  tick={{ fill: "#7A5C3E", fontSize: 11 }}
-                />
+              <BarChart data={distData} barSize={32}>
+                <XAxis dataKey="range" stroke="#B08060" tick={{ fill: "#7A5C3E", fontSize: 11 }} />
+                <YAxis allowDecimals={false} stroke="#B08060" tick={{ fill: "#7A5C3E", fontSize: 11 }} />
                 <Tooltip
-                  contentStyle={{
-                    background: "#fff",
-                    border: "1px solid #E2CCB0",
-                    borderRadius: 8,
-                    color: "#3B2510"
-                  }}
+                  contentStyle={{ background: "#fff", border: "1px solid #E2CCB0", borderRadius: 8, color: "#3B2510" }}
                   labelStyle={{ color: "#3B2510" }}
                   itemStyle={{ color: "#8A5F41" }}
                 />
                 <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                  {distData.map((entry, i) => (
-                    <Cell key={i} fill={entry.color} />
-                  ))}
+                  {distData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
           )}
         </div>
 
-        {/* Top Candidates — compact */}
-        {stats.top_candidates?.length > 0 && (
-          <div className="card" style={{ marginBottom: 0 }}>
-            <h2>🏅 Top Candidates</h2>
+        {/* Top Candidates */}
+        <div className="card" style={{ marginBottom: 0 }}>
+          <h2>🏅 Top Candidates</h2>
+          {stats.top_candidates?.length === 0 ? (
+            <div className="empty-state" style={{ padding: "20px 0" }}>
+              <div className="empty-icon">👤</div>
+              <p>No candidates yet.</p>
+            </div>
+          ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {stats.top_candidates.slice(0, 4).map((c, i) => (
+              {stats.top_candidates?.slice(0, 4).map((c, i) => (
                 <div key={i} style={{
                   display: "flex",
                   alignItems: "center",
@@ -143,7 +138,7 @@ export default function DashboardPage() {
                       color: "var(--text-primary)",
                       whiteSpace: "nowrap",
                       overflow: "hidden",
-                      textOverflow: "ellipsis"
+                      textOverflow: "ellipsis",
                     }}>
                       {c.name || "Unknown"}
                     </div>
@@ -152,7 +147,7 @@ export default function DashboardPage() {
                       color: "var(--text-muted)",
                       whiteSpace: "nowrap",
                       overflow: "hidden",
-                      textOverflow: "ellipsis"
+                      textOverflow: "ellipsis",
                     }}>
                       {c.email}
                     </div>
@@ -161,11 +156,7 @@ export default function DashboardPage() {
                     fontSize: 14,
                     fontWeight: 800,
                     color: scoreColor(c.final_score),
-                    background: c.final_score >= 75
-                      ? "rgba(204,214,127,0.25)"
-                      : c.final_score >= 50
-                      ? "rgba(138,95,65,0.12)"
-                      : "rgba(192,57,43,0.10)",
+                    background: scoreBg(c.final_score),
                     padding: "3px 8px",
                     borderRadius: 6,
                     flexShrink: 0,
@@ -175,9 +166,8 @@ export default function DashboardPage() {
                 </div>
               ))}
             </div>
-          </div>
-        )}
-
+          )}
+        </div>
       </div>
     </div>
   );
