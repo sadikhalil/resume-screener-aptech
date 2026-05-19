@@ -66,7 +66,6 @@ export default function CandidatesPage() {
               </div>
               <div className="candidate-name">{c.name || "Unknown"}</div>
               <div className="candidate-email">{c.email || "No email"}</div>
-              {c.phone && <div className="muted">{c.phone}</div>}
 
               {c.skills?.length > 0 && (
                 <div className="skills-list">
@@ -78,10 +77,6 @@ export default function CandidatesPage() {
                   )}
                 </div>
               )}
-
-              <div className="muted" style={{ marginTop: 4 }}>
-                ID #{c.id}
-              </div>
 
               <button
                 className="btn-danger"

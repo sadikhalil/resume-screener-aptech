@@ -451,7 +451,10 @@ button:disabled { background: var(--border); color: var(--text-faint); cursor: n
 @media (max-width: 768px) {
 
   /* Show mobile top bar */
-  .mobile-topbar { display: flex; }
+  .mobile-topbar {
+    display: flex;
+    justify-content: space-between;
+  }
 
   /* Show overlay when sidebar open */
   .sidebar-overlay { display: block; }
@@ -487,6 +490,13 @@ button:disabled { background: var(--border); color: var(--text-faint); cursor: n
   /* Dashboard chart + candidates — stack on mobile */
   .dashboard-grid {
     grid-template-columns: 1fr !important;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .dashboard-grid > * {
+    min-width: 0;
   }
 
   /* Candidates grid — 1 column on mobile */
